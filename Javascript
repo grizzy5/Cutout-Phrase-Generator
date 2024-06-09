@@ -1,0 +1,56 @@
+let letters = {};
+let variants = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%():;"\',.?'.split('');
+
+// Define the number of variants for each character
+let variantCounts = {
+  'A': 7, 'B': 7, 'C': 7, 'D': 7, 'E': 7, 'F': 7, 'G': 7, 'H': 7, 'I': 7, 'J': 7, 'K': 7, 'L': 7, 'M': 7, 'N': 7, 'O': 7, 'P': 7, 'Q': 7, 'R': 7, 'S': 7, 'T': 7, 'U': 7, 'V': 7, 'W': 7, 'X': 7, 'Y': 7, 'Z': 7,
+  'a': 7, 'b': 7, 'c': 7, 'd': 7, 'e': 7, 'f': 7, 'g': 7, 'h': 7, 'i': 7, 'j': 7, 'k': 7, 'l': 7, 'm': 7, 'n': 7, 'o': 7, 'p': 7, 'q': 7, 'r': 7, 's': 7, 't': 7, 'u': 7, 'v': 7, 'w': 7, 'x': 7, 'y': 7, 'z': 7,
+  '0': 4, '1': 4, '2': 4, '3': 4, '4': 4, '5': 4, '6': 4, '7': 4, '8': 4, '9': 4,
+  '!': 2, '&': 3, '(': 1, ')': 1, '@': 1, ',': 2, '?': 2, "'": 3, '$': 1, '%': 4, 'colon': 2, '#': 1
+};
+
+const baseURL = 'https://assets.editor.p5js.org/6663ced073b2b1001a793eaa/';
+
+function getFilePath(char, variant) {
+  // Handle special cases
+  if (char === ':') char = 'colon';
+  return `${baseURL}${char}_${variant}.jpeg`;
+}
+
+function preload() {
+  for (let char of variants) {
+    letters[char] = [];
+    let count = variantCounts[char] || 1; // Default to 1 if not specified
+    for (let i = 1; i <= count; i++) {
+      let filePath = getFilePath(char, i);
+      console.log(`Attempting to load image: ${filePath}`);
+      letters[char].push(loadImage(filePath, () => console.log(`Successfully loaded: ${filePath}`), () => console.error(`Error loading image: ${filePath}`)));
+    }
+  }
+}
+
+function setup() {
+  createCanvas(800, 400);
+}
+
+function draw() {
+  background(255);
+  let phrase = "HELLO WORLD! This is a test: 12345.";
+  let x = 50;
+  let y = 100;
+
+  for (let i = 0; i < phrase.length; i++) {
+    let char = phrase.charAt(i);
+    if (char === ':') char = 'colon';
+    if (char === ' ') {
+      x += 30; // Adjust spacing for spaces
+      continue;
+    }
+
+    if (letters[char] && letters[char].length > 0) {
+      let variantIndex = i % letters[char].length;
+      image(letters[char][variantIndex], x, y);
+      x += letters[char][variantIndex].width + 10; // Adjust spacing as needed
+    }
+  }
+}
